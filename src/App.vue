@@ -312,7 +312,7 @@ export default {
       if (!this.searchQuery.trim()) return;
 
       try {
-        const url = `http://127.0.0.1:8083/query-shelters?address=${this.searchQuery}`
+        const url = `https://flask-server-p724.onrender.com/query-shelters?address=${this.searchQuery}`
         // const url = `/data/mock-search.json?q=${this.searchQuery}`
         const mockResponse = await fetch(url).then(res => res.json())
         if (mockResponse.status_code === 200) {
@@ -347,7 +347,7 @@ export default {
       this.selectedShelterId = shelter.id;
       if (this.popup) this.popup.remove()
       try {
-        const url = `http://127.0.0.1:8083/query-routes?address=${this.searchQuery}&shelter_id=${shelter.id}`
+        const url = `https://flask-server-p724.onrender.com/query-routes?address=${this.searchQuery}&shelter_id=${shelter.id}`
         // const url = `/data/mock-routes.json?q=${this.searchQuery}&id=${shelter.id}`
         const mockResponse = await fetch(url).then(res => res.json())
 
