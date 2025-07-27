@@ -1,0 +1,28 @@
+{
+  "name": "shelter-map-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d dist"
+},
+  "homepage": "https://kzhou305.github.io/heatwave2",
+  "dependencies": {
+    "@element-plus/icons-vue": "2.3.1",
+    "@turf/turf": "^7.2.0",
+    "element-plus": "2.9.9",
+    "mapbox-gl": "^3.13.0",
+    "vue": "^3.5.17"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.0",
+    "gh-pages": "^6.3.0",
+    "sass-embedded": "^1.89.2",
+    "vite": "^7.0.4",
+    "vite-plugin-gh-pages": "^1.0.1"
+  }
+}
