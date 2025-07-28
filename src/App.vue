@@ -1,13 +1,34 @@
 <template>
   <div class="page-wrapper">
+
     <!-- Header always on top -->
     <header class="app-header">
-      <h1>Heat-Aware Shelter Routing</h1>
+      <h1>Interactive Heat-Responsive Shelter Routing Tool for Nihonbashi</h1>
       <p>Plan your route to the nearest shelter while minimizing heat risk.</p>
     </header>
 
+    <!-- Intro Button -->
+    <button class="intro-toggle" @click="showIntro = !showIntro">
+      {{ showIntro ? 'Close' : 'Intro / Guide' }}
+    </button>
+
+    <!-- Slide-in Intro Panel -->
+    <div v-if="showIntro" class="intro-panel">
+      <h2>About This App</h2>
+      <p>This tool helps you find the 5 nearest shelters based on your location while minimizing heat exposure.</p>
+      <h3>How to Use:</h3>
+      <ul>
+        <li>Enter your location or station name.</li>
+        <li>Click “Search” to find nearby shelters.</li>
+        <li>Select one to view safe walking/driving routes.</li>
+        <li>Click “Reset” to start over.</li>
+      </ul>
+    </div>
+
+
     <!-- Main map and sidebar area -->
     <div class="main-container">
+
       <!-- Sidebar -->
       <div class="search-container">
         <p><strong>Select your location</strong> to find the 5 closest shelters.</p>
@@ -16,6 +37,7 @@
           <input v-model="searchQuery" @keyup.enter="searchShelters" placeholder="Search for shelters..."
             class="search-input">
           <button @click="searchShelters" class="search-button">Search</button>
+          <button @click="resetSearch" class="reset-button">Reset</button>
         </div>
 
         <!-- Shelter Results -->
@@ -77,7 +99,8 @@ export default {
       map: null,
       popup: null,
       routeSummary: null,
-      selectedShelterId: null
+      selectedShelterId: null,
+      showIntro: true,
     }
   },
   methods: {
@@ -109,6 +132,39 @@ export default {
       item.appendChild(document.createTextNode(label));
       legend.appendChild(item);
     },
+
+    resetSearch() {
+      // Reset data
+      this.searchQuery = '';
+      this.searchResults = [];
+      this.selectedShelterId = null;
+      this.routeSummary = null;
+
+        const emptyFeatureCollection = {
+          type: 'FeatureCollection',
+          features: []
+        };
+
+      // Remove all related layers and sources if they exist
+      const sources = [
+        'search-point', 'search-buffer',
+        'shelters-h', 'routes-points',
+        'routes'
+      ];
+
+      sources.forEach(id => {
+        if (map.getSource(id)) {
+          map.getSource(id).setData(emptyFeatureCollection);
+        }
+      });
+
+      //  reset the map view to default
+      map.flyTo({
+        center: [139.777208, 35.683530], 
+        zoom: 14.1
+      });
+    },
+
 
     mapLoaded(map) {
       const that = this;
@@ -218,6 +274,7 @@ export default {
         that.addLegendItem('Start Point', '#67c23a', 'circle');
         that.addLegendItem('End Point', '#ff0000', 'circle');
 
+
         // add map evtent
         map.on('mousemove', 'route-line', e => {
           map.getCanvas().style.cursor = 'pointer'
@@ -230,7 +287,70 @@ export default {
           const properties = feature.properties
           if (properties.mode === 'walk') that.showProperties(e.lngLat, properties)
         })
-      })
+      });
+
+
+      map.addSource('search-point', {
+                  type: 'geojson',
+                  data: turf.featureCollection([])
+                })
+
+      map.addLayer({
+          id: 'search-point',
+          type: 'circle',
+          source: 'search-point',
+          paint: {
+            'circle-radius': 7,
+            'circle-color': '#67c23a',
+            'circle-opacity': 1,
+            'circle-stroke-color': '#67c',
+            'circle-stroke-width': 2
+          }
+        });
+
+      this.addLegendItem('Search Point', '#67c23a', 'circle');
+
+      map.addLayer({
+        id: 'search-point-label',
+        type: 'symbol',
+        source: 'search-point',
+        layout: {
+          'text-field': ['get', 'name'],
+          'text-offset': [0, 1.5],
+          'text-anchor': 'top',
+          'text-size': 14
+        },
+        paint: {
+          'text-color': '#e6194b'
+        }
+      });
+
+      map.addSource('search-buffer', {
+        type: 'geojson',
+        data: turf.featureCollection([])
+      });
+
+      map.addLayer({
+        id: 'search-buffer-fill',
+        type: 'fill',
+        source: 'search-buffer',
+        paint: {
+          'fill-color': '#0080ff',
+          'fill-opacity': 0.1
+        }
+      });
+
+      map.addLayer({
+        id: 'search-buffer-outline',
+        type: 'line',
+        source: 'search-buffer',
+        paint: {
+          'line-color': '#0077b6',
+          'line-width': 2
+        }
+      });
+
+
 
       // Add shelters
       map.addSource('shelters', {
@@ -246,12 +366,12 @@ export default {
         type: 'circle',
         source: 'shelters',
         paint: {
-          'circle-radius': 3,
-          'circle-color': '#00f',
+          'circle-radius': 10,
+          'circle-color': '#00AA00',
           'circle-opacity': 0.8,
-          'circle-stroke-color': '#00f',
-          'circle-stroke-width': 3,
-          'circle-stroke-opacity': 0.4
+          'circle-stroke-color': '#003366',
+          'circle-stroke-width': 5,
+          'circle-stroke-opacity': 1
         }
       })
       this.addLegendItem('Shelters', '#00f', 'circle');
@@ -269,7 +389,7 @@ export default {
           'circle-stroke-opacity': 0.4
         }
       })
-      this.addLegendItem('Highlighted Shelter', '#ff0', 'circle');
+      this.addLegendItem('Nearest 5 Shelters', '#ff0', 'circle');
 
       map.addLayer({
         id: 'shelters-label',
@@ -308,44 +428,54 @@ export default {
         .setHTML(content)
         .addTo(map);
     },
+
+    
     async searchShelters() {
       if (!this.searchQuery.trim()) return;
 
       try {
-        const url = `https://flask-server-p724.onrender.com/query-shelters?address=${this.searchQuery}`
-        // const url = `/data/mock-search.json?q=${this.searchQuery}`
-        const mockResponse = await fetch(url).then(res => res.json())
-        if (mockResponse.status_code === 200) {
-          this.searchResults = mockResponse.data;
+        const url = `https://flask-server-p724.onrender.com/query-shelters?address=${this.searchQuery}`;
+        const response = await fetch(url);
+        const mockResponse = await response.json();
 
-          // Update the map with the search results
-          const features = this.searchResults.map(result => {
-            return turf.point([result.longitude, result.latitude], result)
-          });
-          map.getSource('shelters-h').setData(turf.featureCollection(features))
-          
+        if (response.status === 200 && mockResponse.data?.shelters) {
 
-          // Fit the map to the search results
+          this.searchResults = mockResponse.data.shelters;
+
+          const features = this.searchResults.map(result =>
+            turf.point([result.longitude, result.latitude], result)
+          );
+          map.getSource('shelters-h').setData(turf.featureCollection(features));
+
           const bbox = turf.bbox(turf.featureCollection(features));
           map.fitBounds(bbox, { padding: 50 });
 
+
           const searchPointFeature = turf.point(
-            [this.searchResults[0].origin_lon, this.searchResults[0].origin_lat],
+            [mockResponse.data.search_lon, mockResponse.data.search_lat],
             { name: this.searchQuery }
           );
 
           map.getSource('search-point').setData(
             turf.featureCollection([searchPointFeature])
           );
-          
+
+          // Create a 0.1 km (100 meter) buffer polygon around the search point
+          const bufferPolygon = turf.buffer(searchPointFeature, 0.1, { units: 'kilometers' });
+
+          // Add buffer to map
+          map.getSource('search-buffer').setData(bufferPolygon);
+
         }
       } catch (error) {
         console.error('Error searching shelters:', error);
       }
     },
+
     async selectShelter(shelter) {
       this.selectedShelterId = shelter.id;
       if (this.popup) this.popup.remove()
+
       try {
         const url = `https://flask-server-p724.onrender.com/query-routes?address=${this.searchQuery}&shelter_id=${shelter.id}`
         // const url = `/data/mock-routes.json?q=${this.searchQuery}&id=${shelter.id}`
@@ -423,7 +553,7 @@ export default {
           ]
           map.getSource('routes-points').setData(turf.featureCollection(routePoints))
           const bbox = turf.bbox(turf.featureCollection(routePoints));
-          map.fitBounds(bbox, { padding: 50 });
+          map.fitBounds(bbox, { padding: 400 });
         }
       } catch (error) {
         console.error('Error selecting shelter:', error);
@@ -442,9 +572,9 @@ export default {
 }
 
 .app-header {
-  background: #fff;
-  padding: 1rem;
-  border-bottom: 1px solid #ddd;
+  background: #d7d4d4;
+  padding: 2rem;
+  border-bottom: 1px solid #090909;
   z-index: 1001;
 
   h1 {
@@ -467,13 +597,13 @@ export default {
 
 .search-container {
   position: absolute;
-  top: 6rem;
+  top: 4rem;
   left: 1rem;
   z-index: 1000;
-  background: white;
+  background: rgb(172, 170, 169);
   padding: 28px;
   border-radius: 4px;
-  width: 400px;
+  width: 600px;
 
   .search-form {
     display: flex;
@@ -620,6 +750,70 @@ export default {
     line-height: 1.5;
   }
 }
+
+.reset-button {
+  margin-left: 10px;
+  background-color: #f44336;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.intro-toggle {
+  position: absolute;
+  bottom: 18rem; /* below search box */
+  left: 8rem;
+  background-color: #1e293b;
+  color: #fff;
+  font-size: 14px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 1001;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.intro-panel {
+  position: absolute;
+  bottom: 1rem;
+  left: 8rem;
+  width: 500px;
+  background-color: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  z-index: 800;
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+
+.intro-panel h3 {
+  margin-top: 0;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.intro-panel h4 {
+  margin: 1rem 0 0.5rem;
+  font-size: 15px;
+  color: #334155;
+}
+
+.intro-panel ul {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+
+.intro-panel .note {
+  margin-top: 1rem;
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+}
+
 
 
 </style>
