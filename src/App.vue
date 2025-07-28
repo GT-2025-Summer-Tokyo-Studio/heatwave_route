@@ -126,7 +126,7 @@ export default {
       // Add districts
       map.addSource('districts', {
         type: 'geojson',
-        data: '/data/districts.geojson'
+        data: import.meta.env.BASE_URL + 'data/districts.geojson'
       });
       map.addLayer({
         id: 'districts-line',
@@ -235,7 +235,7 @@ export default {
       // Add shelters
       map.addSource('shelters', {
         type: 'geojson',
-        data: '/data/shelters.geojson'
+        data: import.meta.env.BASE_URL + 'data/shelters.geojson'
       })
       map.addSource('shelters-h', {
         type: 'geojson',
