@@ -4,13 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview",
-  "predeploy": "npm run build",
-  "deploy": "gh-pages -d dist"
-},
-  "homepage": "https://kzhou305.github.io/heatwave2",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
+  },
+  "homepage": "https://github.com/GT-2025-Summer-Tokyo-Studio/heatwave_route",
   "dependencies": {
     "@element-plus/icons-vue": "2.3.1",
     "@turf/turf": "^7.2.0",
