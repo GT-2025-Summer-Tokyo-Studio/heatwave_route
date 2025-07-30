@@ -1,0 +1,46 @@
+{
+  "data": [
+    {
+      "capacity": 2987,
+      "distance": 338.106165899951,
+      "id": 0,
+      "latitude": 35.679538,
+      "longitude": 139.776687,
+      "name": "Sakamoto Elementary School"
+    },
+    {
+      "capacity": 2480,
+      "distance": 609.212085842802,
+      "id": 1,
+      "latitude": 35.679059,
+      "longitude": 139.769114,
+      "name": "Joto Elementary School"
+    },
+    {
+      "capacity": 3120,
+      "distance": 635.828118161406,
+      "id": 2,
+      "latitude": 35.684273,
+      "longitude": 139.78123,
+      "name": "Nihonbashi Elementary School"
+    },
+    {
+      "capacity": 1749,
+      "distance": 759.604599781669,
+      "id": 3,
+      "latitude": 35.688038,
+      "longitude": 139.770509,
+      "name": "Tokiwa Elementary School"
+    },
+    {
+      "capacity": 2460,
+      "distance": 795.600443314278,
+      "id": 4,
+      "latitude": 35.674999,
+      "longitude": 139.775575,
+      "name": "Kyoka Square"
+    }
+  ],
+  "message": "响应成功",
+  "status_code": 200
+}

@@ -1,0 +1,77 @@
+{
+  "version": 8,
+  "name": "default",
+  "glyphs": "https://webmap-vs5.sf-express.com/MapVTService/vmapx/mapbox/{fontstack}/{range}.pbf",
+  "sprite": "/images/sprites/sprite",
+  "sources": {
+    "amap-image": {
+      "type": "raster",
+      "tiles": [
+        "https://webst01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+        "https://webst02.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+        "https://webst03.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+        "https://webst04.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"
+      ],
+      "tileSize": 256
+    },
+    "amap-image-label": {
+      "type": "raster",
+      "tiles": [
+        "https://wprd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&x={x}&y={y}&z={z}&scl=4&style=8&ltype=4",
+        "https://wprd02.is.autonavi.com/appmaptile?lang=zh_cn&size=1&x={x}&y={y}&z={z}&scl=4&style=8&ltype=4",
+        "https://wprd03.is.autonavi.com/appmaptile?lang=zh_cn&size=1&x={x}&y={y}&z={z}&scl=4&style=8&ltype=4",
+        "https://wprd04.is.autonavi.com/appmaptile?lang=zh_cn&size=1&x={x}&y={y}&z={z}&scl=4&style=8&ltype=4"
+      ],
+      "tileSize": 256
+    },
+    "amap-vector": {
+      "type": "raster",
+      "tiles": [
+        "https://webrd01.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1",
+        "https://webrd02.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1",
+        "https://webrd03.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1",
+        "https://webrd04.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}&lang=zh_cn&size=1&scale=1"
+      ],
+      "tileSize": 256
+    }
+  },
+  "layers": [
+    {
+      "id": "amap-image",
+      "type": "raster",
+      "source": "amap-image",
+      "minzoom": 0,
+      "maxzoom": 17.4,
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "amap-image-label",
+      "type": "raster",
+      "source": "amap-image-label",
+      "minzoom": 0,
+      "maxzoom": 17.4,
+      "layout": {
+        "visibility": "none"
+      }
+    },
+    {
+      "id": "amap-vector",
+      "type": "raster",
+      "source": "amap-vector",
+      "minzoom": 0,
+      "maxzoom": 17.4,
+      "layout": {
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "background",
+      "type": "background",
+      "layout": {
+        "visibility": "none"
+      }
+    }
+  ]
+}
