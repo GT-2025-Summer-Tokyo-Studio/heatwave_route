@@ -26,3 +26,4 @@ This is the interactive **frontend web tool** for visualizing optimized walking 
 
 ## Webtool
 
+[link](https://gt-2025-summer-tokyo-studio.github.io/heatwave_route/)
