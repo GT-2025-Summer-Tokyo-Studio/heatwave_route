@@ -20,7 +20,7 @@ This is the interactive **frontend web tool** for visualizing optimized walking 
     npm run dev
 
 ###  The app will run at
-    http://localhost:5173/heatwave2/
+    http://localhost:5173/heatwave_route/
 
 
 
